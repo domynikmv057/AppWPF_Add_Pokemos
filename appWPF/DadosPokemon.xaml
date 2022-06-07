@@ -1,0 +1,28 @@
+﻿<Window x:Class="appWPF.DadosPokemon"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="DadosPokemon" Height="382" Width="442">
+    <Grid Background="#F5F5F5" Margin="0,0,-19,-6">
+        <TextBlock  TextAlignment="Center" FontSize="26" Margin="0,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="50" HorizontalAlignment="Center" Width="414" RenderTransformOrigin="0.5,0.5">
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="-0.22"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-0.496"/>
+                </TransformGroup>
+            </TextBlock.RenderTransform><Run Language="pt-br" Text="FICHA"/><Run Text=" POKEMOM"/><LineBreak/><Run/><Run Text=" "/></TextBlock>
+        <Label FontSize="15" FontWeight="Bold"  Content="Nome: " HorizontalAlignment="Left" Margin="86,119,0,0" VerticalAlignment="Top" Height="38" Width="86"/>
+        <TextBox Width="200" Height="30" BorderBrush="Black" FontSize="20"  Margin="177,121,0,0" TextWrapping="Wrap" Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Label FontSize="15" FontWeight="Bold"  Content="Tipo:" HorizontalAlignment="Left" Margin="86,161,0,0" VerticalAlignment="Top" Height="38" Width="86"/>
+        <TextBox  Width="200" Height="30" BorderBrush="Black" FontSize="20" Margin="177,165,0,0" TextWrapping="Wrap" Text="{Binding PokeType}"  VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <Label FontSize="15" FontWeight="Bold"   Content="Treinador:" HorizontalAlignment="Left" Margin="86,207,0,0" Width="86" Height="37" VerticalAlignment="Top"  />
+        <TextBox  Width="200" Height="30" BorderBrush="Black" FontSize="20"  HorizontalAlignment="Left" Margin="177,210,0,0" TextWrapping="Wrap" Text="{Binding Coach}" VerticalAlignment="Top" />
+        <Button Width="100" Height="30" FontWeight="DemiBold" BorderBrush="Black" Background="#3CB371" Command="" Click="bntSalvar" Content="Salvar" HorizontalAlignment="Center" Margin="0,267,0,0"  VerticalAlignment="Top"/>
+        <Button Width="100" Height="30" FontWeight="DemiBold" BorderBrush="Black" Background="#B22222" Content="Cancelar" HorizontalAlignment="Left" Margin="277,267,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+
+    </Grid>
+</Window>
