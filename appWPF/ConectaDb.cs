@@ -1,19 +1,14 @@
 ﻿using Npgsql;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace appWPF
 {
-     public class ConectaDb
+    public class ConectaDb
     {
         public ObservableCollection<Pokemon> pokemon;
         private NpgsqlConnection conn;
-        private string sql;
+        private string query;
         private NpgsqlCommand cmd;
 
         public ConectaDb()
@@ -23,19 +18,19 @@ namespace appWPF
 
         public void inserirPokemon(string _nomePokemon, string _tipoPokemon, string _treinadorPokemon)
         {
-            string query = $@"INSERT INTO pokemons(nome_pokemon, tipo_pokemon, treinador_pokemon) values('{_nomePokemon}', '{_tipoPokemon}', '{_treinadorPokemon}')";
+            query = $@"INSERT INTO pokemons(nome_pokemon, tipo_pokemon, treinador_pokemon) values('{_nomePokemon}', '{_tipoPokemon}', '{_treinadorPokemon}')";
             conectaDbd(query);
         }
 
         public void deletarPokemon(int _id)
         {
-            string query = $@"DELETE FROM pokemons WHERE id_pokemon = {_id};";
+            query = $@"DELETE FROM pokemons WHERE id_pokemon = {_id};";
             conectaDbd(query);
         }
 
         public void editarPokemon(int _id, string _nomePokemon, string _tipoPokemon, string _treinadorPokemon)
         {
-            string query = $@"update pokemons set nome_pokemon='{_nomePokemon}', tipo_pokemon='{_tipoPokemon}', treinador_pokemon='{_treinadorPokemon}' where id_pokemon='{_id}'";
+            query = $@"update pokemons set nome_pokemon='{_nomePokemon}', tipo_pokemon='{_tipoPokemon}', treinador_pokemon='{_treinadorPokemon}' where id_pokemon='{_id}'";
             conectaDbd(query);
         }
 
@@ -45,13 +40,13 @@ namespace appWPF
         public ObservableCollection<Pokemon> consultarPokemon()
 
         {
-            using (NpgsqlConnection con = GetConnection())
+            using (conn = GetConnection())
             {
-                string query = @"select * from pokemons";
-                NpgsqlCommand cmd = new NpgsqlCommand(query, con);
+                query = @"select * from pokemons";
+                cmd = new NpgsqlCommand(query, conn);
                 try
                 {
-                    con.Open();
+                    conn.Open();
 
                     int n = cmd.ExecuteNonQuery();
 
@@ -64,15 +59,13 @@ namespace appWPF
 
                         }
                     }
-
-                    return this.pokemon;
                     cmd.Dispose();
-                    con.Close();
-
+                    conn.Close();
+                    return this.pokemon;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ERRO AO LER");
+                    Console.WriteLine("ERROR: " + ex.Message);
                     return this.pokemon;
                 }
 
@@ -84,12 +77,12 @@ namespace appWPF
 
         public void conectaDbd(string parametro)
         {
-            using (NpgsqlConnection con = GetConnection())
+            using (conn = GetConnection())
             {
-                NpgsqlCommand cmd = new NpgsqlCommand(parametro, con);
+                cmd = new NpgsqlCommand(parametro, conn);
                 try
                 {
-                    con.Open();
+                    conn.Open();
                     int n = cmd.ExecuteNonQuery();
                     if (n == 1)
                     {
@@ -100,13 +93,13 @@ namespace appWPF
                         Console.WriteLine(n);
                         Console.WriteLine("algo Deu errado");
                     }
-                    con.Close();
+                    conn.Close();
                     cmd.Dispose();
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("ERROR: " + ex.Message);
-                    con.Close();
+                    conn.Close();
                     cmd.Dispose();
                 }
             }
@@ -114,15 +107,21 @@ namespace appWPF
 
 
 
-        public  void TestConnection()
+        public  int TestConnection()
         {
-            using (NpgsqlConnection con=GetConnection())
+            using (conn=GetConnection())
             {
-                con.Open();
-                if(con.State == ConnectionState.Open)
+                try
                 {
-                    
-                    Console.WriteLine("Conenected");
+                    conn.Open();
+                    conn.Close();
+                    return 1;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ERROR: " + ex.Message);
+                    conn.Close();
+                    return 0;
                 }
             }
         }

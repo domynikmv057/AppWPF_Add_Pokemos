@@ -26,8 +26,6 @@
         <Button Width="100" Height="30" FontWeight="DemiBold" BorderBrush="Black"  Background="#DAA520" Command="{Binding Edite}" Grid.Column="1" Content="Editar" HorizontalAlignment="Left" Margin="29,115,0,0" VerticalAlignment="Top" />
         <Button Width="100" Height="30" FontWeight="DemiBold" BorderBrush="Black" Background="#B22222" Command="{Binding Remove}" Grid.Column="1" Content="Remover" HorizontalAlignment="Left" Margin="29,160,0,0" VerticalAlignment="Top"/>
         <TextBlock FontWeight="Bold" FontSize="26" Grid.Column="1" HorizontalAlignment="Left" Margin="466,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="pt-br" Text="Lista "/><Run Language="pt-br" Text="de "/><Run Language="pt-br" Text ="Pokemons"/></TextBlock>
-        <Label FontWeight="Bold" Grid.Column="1" Content="{Binding treinador.Nome}" HorizontalAlignment="Left" Margin="84,4,0,0" VerticalAlignment="Top"/>
-        <Label FontWeight="Bold" Grid.Column="1" Content="Professor:" HorizontalAlignment="Left" Margin="17,4,0,0" VerticalAlignment="Top"/>
 
 
     </Grid>

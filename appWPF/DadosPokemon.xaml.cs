@@ -25,14 +25,14 @@ namespace appWPF
         }
         public void bntSalvar(object sender, RoutedEventArgs e)
         {
-            DialogResult = true;
+            this.DialogResult = true;
         }
 
 
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+            this.DialogResult = false;
 
         }
     }

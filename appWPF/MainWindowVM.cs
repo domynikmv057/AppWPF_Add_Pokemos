@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace appWPF
@@ -12,40 +13,26 @@ namespace appWPF
         public ICommand Edite { get; private set; }
         public Pokemon selectPokemon { get; set; }
 
-        public string nomeUsuario { get; set; } = "";
 
-        public Treinador treinador { get; set; }
 
         private ConectaDb conectaDb { get; set; }
         public MainWindowVM()
         {
             conectaDb = new ConectaDb();
             pokeList = new ObservableCollection<Pokemon>();
-            consultarPokemon();
-            IniciaComando();
-            treinador = new Treinador();
-            if (nomeUsuario == "")
+            if(conectaDb.TestConnection() == 1)
             {
-                InsertUserName userName = new InsertUserName();
-                userName.DataContext = treinador;
-                userName.ShowDialog();
+                consultarPokemon();
+                IniciaComando();
+
+            }else
+            {
+                string messageBoxText = "Não foi possível conectar ao banco de dados, tente novamente mais tarde!";
+                MessageBox.Show(messageBoxText, "Erro De Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.Application.Current.Shutdown();
             }
-        }
 
-        public void inserirPokemon(string _nomePokemon, string _tipoPokemon, string _treinadorPokemon)
-        {
-            conectaDb.inserirPokemon(_nomePokemon, _tipoPokemon, _treinadorPokemon);
         }
-        
-        public void deletaPokemon(int _id)
-        {
-            conectaDb.deletarPokemon(_id);
-        }
-        public void editarPokemon(int _id, string _nomePokemon, string _tipoPokemon, string _treinadorPokemon)
-        {
-            conectaDb.editarPokemon(_id, _nomePokemon, _tipoPokemon, _treinadorPokemon);
-        }
-
         public void consultarPokemon()
         {
             this.pokeList.Clear();
@@ -63,32 +50,67 @@ namespace appWPF
                 DadosPokemon tela = new DadosPokemon();
                 tela.DataContext = newPokemon;
                 tela.ShowDialog();
-                inserirPokemon(newPokemon.Name, newPokemon.PokeType, newPokemon.Coach);
-                consultarPokemon();
+                if ((bool)tela.DialogResult)
+                {
+                    if(string.IsNullOrEmpty(newPokemon.Name)|| string.IsNullOrEmpty(newPokemon.PokeType) || string.IsNullOrEmpty(newPokemon.Coach))
+                    {
+                        if (MessageBox.Show("Um ou mais campos estão sem valor, deseja inserir assim mesmo?",
+                        "Campos vazios",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            conectaDb.inserirPokemon(newPokemon.Name, newPokemon.PokeType, newPokemon.Coach);
+                            consultarPokemon();
+                        }
+
+                    }
+                    else
+                    {
+                        conectaDb.inserirPokemon(newPokemon.Name, newPokemon.PokeType, newPokemon.Coach);
+                        consultarPokemon();
+                    }
+
+                }
             });
 
             Remove = new RelayCommand((object _) =>
             {
-                deletaPokemon(selectPokemon.Id);
-                consultarPokemon();
+                if(selectPokemon != null)
+                {
+                    if (MessageBox.Show($"Deseja remover o {selectPokemon.Name} do treinador {selectPokemon.Coach}?",
+                    "Remover Pokemon",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        conectaDb.deletarPokemon(selectPokemon.Id);
+                        consultarPokemon();
+                    }
+                }
+
             });
 
             Edite = new RelayCommand((object _) =>
             {
                   if(selectPokemon != null)
                 {
-                    Pokemon copy = (Pokemon)selectPokemon.Clone();
 
-                    DadosPokemon tela = new DadosPokemon();
-                    tela.DataContext = copy;
-
-                    bool alterou = (bool)tela.ShowDialog();
-                    if(alterou)
+                    if (MessageBox.Show($"Deseja mesmo editar {selectPokemon.Name}?",
+                    "Editar Pokemon",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        editarPokemon(copy.Id, copy.Name, copy.PokeType, copy.Coach);
-                        consultarPokemon();
-                    }
+                        Pokemon copy = (Pokemon)selectPokemon.Clone();
 
+                        DadosPokemon tela = new DadosPokemon();
+                        tela.DataContext = copy;
+
+                        bool alterou = (bool)tela.ShowDialog();
+                        if (alterou)
+                        {
+                            conectaDb.editarPokemon(copy.Id, copy.Name, copy.PokeType, copy.Coach);
+                            consultarPokemon();
+                        }
+                    }
                 }
                 
             });
