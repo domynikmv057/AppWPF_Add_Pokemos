@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Google.Protobuf.WellKnownTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,10 +20,7 @@ namespace appWPF
     /// </summary>
     public partial class DadosPokemon : Window
     {
-        public DadosPokemon()
-        {
-            InitializeComponent();
-        }
+        
         public void bntSalvar(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
@@ -35,5 +33,7 @@ namespace appWPF
             this.DialogResult = false;
 
         }
+
+     
     }
 }

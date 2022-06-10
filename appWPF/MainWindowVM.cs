@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using appWPF.Conection;
+using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
@@ -13,36 +15,32 @@ namespace appWPF
         public ICommand Edite { get; private set; }
         public Pokemon selectPokemon { get; set; }
 
+        public string BancoEscolhido { get; set; } = "Mysql";
 
+        private IConnection conectDbd;
 
-        private ConectaDb conectaDb { get; set; }
         public MainWindowVM()
         {
-            conectaDb = new ConectaDb();
-            pokeList = new ObservableCollection<Pokemon>();
-            if(conectaDb.TestConnection() == 1)
-            {
-                consultarPokemon();
-                IniciaComando();
 
-            }else
+            //conectDbd = new ConnectionMysql();
+            conectDbd = new ConnectionPostgres();
+
+            if (conectDbd.TestConnection())
+            {
+                pokeList = new ObservableCollection<Pokemon>();
+                pokeList = conectDbd.ConsultInDbd();
+                IniciaComando();
+            }
+            else
             {
                 string messageBoxText = "Não foi possível conectar ao banco de dados, tente novamente mais tarde!";
                 MessageBox.Show(messageBoxText, "Erro De Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
                 System.Windows.Application.Current.Shutdown();
             }
-
         }
-        public void consultarPokemon()
-        {
-            this.pokeList.Clear();
-            this.pokeList = conectaDb.consultarPokemon();
-        }
-
 
         public void IniciaComando()
         {
-
             Add = new RelayCommand((object _) =>
             {
                 Pokemon newPokemon = new Pokemon();
@@ -52,22 +50,22 @@ namespace appWPF
                 tela.ShowDialog();
                 if ((bool)tela.DialogResult)
                 {
-                    if(string.IsNullOrEmpty(newPokemon.Name)|| string.IsNullOrEmpty(newPokemon.PokeType) || string.IsNullOrEmpty(newPokemon.Coach))
+                    if (string.IsNullOrEmpty(newPokemon.Name) || string.IsNullOrEmpty(newPokemon.PokeType) || string.IsNullOrEmpty(newPokemon.Coach))
                     {
-                        if (MessageBox.Show("Um ou mais campos estão sem valor, deseja inserir assim mesmo?",
-                        "Campos vazios",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question) == MessageBoxResult.Yes)
-                        {
-                            conectaDb.inserirPokemon(newPokemon.Name, newPokemon.PokeType, newPokemon.Coach);
-                            consultarPokemon();
-                        }
-
+                        MessageBox.Show("Um ou mais campos estao vazios, Tente novamente!");
                     }
                     else
                     {
-                        conectaDb.inserirPokemon(newPokemon.Name, newPokemon.PokeType, newPokemon.Coach);
-                        consultarPokemon();
+                        try
+                        {
+                            conectDbd.InsertInDbd(newPokemon.Name, newPokemon.PokeType, newPokemon.Coach);
+                            newPokemon.Id = conectDbd.pegarId();
+                            pokeList.Add(newPokemon);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Errro: " + ex);
+                        }
                     }
 
                 }
@@ -75,15 +73,22 @@ namespace appWPF
 
             Remove = new RelayCommand((object _) =>
             {
-                if(selectPokemon != null)
+                if (selectPokemon != null)
                 {
                     if (MessageBox.Show($"Deseja remover o {selectPokemon.Name} do treinador {selectPokemon.Coach}?",
                     "Remover Pokemon",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        conectaDb.deletarPokemon(selectPokemon.Id);
-                        consultarPokemon();
+                        try
+                        {
+                            conectDbd.DeletInDbd(selectPokemon.Id);
+                            pokeList.Remove(selectPokemon);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Errro: " + ex);
+                        }
                     }
                 }
 
@@ -91,7 +96,7 @@ namespace appWPF
 
             Edite = new RelayCommand((object _) =>
             {
-                  if(selectPokemon != null)
+                if (selectPokemon != null)
                 {
 
                     if (MessageBox.Show($"Deseja mesmo editar {selectPokemon.Name}?",
@@ -107,14 +112,31 @@ namespace appWPF
                         bool alterou = (bool)tela.ShowDialog();
                         if (alterou)
                         {
-                            conectaDb.editarPokemon(copy.Id, copy.Name, copy.PokeType, copy.Coach);
-                            consultarPokemon();
+                            if (string.IsNullOrEmpty(copy.Name) || string.IsNullOrEmpty(copy.PokeType) || string.IsNullOrEmpty(copy.Coach))
+                            {
+                                MessageBox.Show("Um ou mais campos estao vazios, Tente novamente!");
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    conectDbd.EditeInDbd(copy.Id, copy.Name, copy.PokeType, copy.Coach);
+                                    selectPokemon.Name = copy.Name;
+                                    selectPokemon.PokeType = copy.PokeType;
+                                    selectPokemon.Coach = copy.Coach;
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Errro: " + ex);
+
+                                }
+                            }
                         }
                     }
                 }
-                
+
             });
         }
-       
+
     }
 }
