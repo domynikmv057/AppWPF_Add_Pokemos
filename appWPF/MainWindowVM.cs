@@ -22,13 +22,12 @@ namespace appWPF
         public MainWindowVM()
         {
 
-            //conectDbd = new ConnectionMysql();
-            conectDbd = new ConnectionPostgres();
+            //conectDbd = new ConnectionMysql(); 
+            conectDbd = new ConnectionPostgres(); 
 
             if (conectDbd.TestConnection())
             {
-                pokeList = new ObservableCollection<Pokemon>();
-                pokeList = conectDbd.ConsultInDbd();
+                pokeList = new ObservableCollection<Pokemon>(conectDbd.ConsultInDbd());
                 IniciaComando();
             }
             else
@@ -39,26 +38,38 @@ namespace appWPF
             }
         }
 
+        public bool CheckEmptyString(string _CheckString)
+        {
+            if (string.IsNullOrEmpty(_CheckString))
+            {
+                throw new Exception("Um ou mais campos estao vazios");
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void IniciaComando()
         {
             Add = new RelayCommand((object _) =>
             {
                 Pokemon newPokemon = new Pokemon();
 
-                DadosPokemon tela = new DadosPokemon();
+
+                FormsPokemon tela = new FormsPokemon();
                 tela.DataContext = newPokemon;
                 tela.ShowDialog();
                 if ((bool)tela.DialogResult)
                 {
-                    if (string.IsNullOrEmpty(newPokemon.Name) || string.IsNullOrEmpty(newPokemon.PokeType) || string.IsNullOrEmpty(newPokemon.Coach))
+                    try
                     {
-                        MessageBox.Show("Um ou mais campos estao vazios, Tente novamente!");
-                    }
-                    else
-                    {
+                        CheckEmptyString(newPokemon.Name);
+                        CheckEmptyString(newPokemon.PokeType);
+                        CheckEmptyString(newPokemon.Coach);
                         try
                         {
-                            conectDbd.InsertInDbd(newPokemon.Name, newPokemon.PokeType, newPokemon.Coach);
+                            conectDbd.InsertInDbd(newPokemon.Name, newPokemon.PokeType, newPokemon.Coach);//MOCK AQUI
                             newPokemon.Id = conectDbd.pegarId();
                             pokeList.Add(newPokemon);
                         }
@@ -66,8 +77,14 @@ namespace appWPF
                         {
                             MessageBox.Show("Errro: " + ex);
                         }
-                    }
 
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+
+                    }
                 }
             });
 
@@ -106,18 +123,17 @@ namespace appWPF
                     {
                         Pokemon copy = (Pokemon)selectPokemon.Clone();
 
-                        DadosPokemon tela = new DadosPokemon();
+                    
+                        FormsPokemon tela = new FormsPokemon();
                         tela.DataContext = copy;
-
                         bool alterou = (bool)tela.ShowDialog();
                         if (alterou)
                         {
-                            if (string.IsNullOrEmpty(copy.Name) || string.IsNullOrEmpty(copy.PokeType) || string.IsNullOrEmpty(copy.Coach))
+                            try
                             {
-                                MessageBox.Show("Um ou mais campos estao vazios, Tente novamente!");
-                            }
-                            else
-                            {
+                                CheckEmptyString(copy.Name);
+                                CheckEmptyString(copy.PokeType);
+                                CheckEmptyString(copy.Coach);
                                 try
                                 {
                                     conectDbd.EditeInDbd(copy.Id, copy.Name, copy.PokeType, copy.Coach);
@@ -130,6 +146,11 @@ namespace appWPF
                                     MessageBox.Show("Errro: " + ex);
 
                                 }
+                            }
+                            catch(Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+
                             }
                         }
                     }

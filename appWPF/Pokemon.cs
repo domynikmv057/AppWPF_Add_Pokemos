@@ -9,8 +9,15 @@ namespace appWPF
         private string name;
         private string type;
         private string coach;
+        private Pokemon @object;
+
         public Pokemon()
         {
+        }
+
+        public Pokemon(Pokemon @object)
+        {
+            this.@object = @object;
         }
 
         public Pokemon(int id, string _name, string _type, string _coach)

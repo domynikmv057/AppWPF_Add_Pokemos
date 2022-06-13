@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 
@@ -6,6 +7,7 @@ namespace appWPF.Conection
 {
     public class ConnectionPostgres : ConnectionDb
     {
+
         public ConnectionPostgres()
         {
             host = "localhost";
@@ -13,10 +15,9 @@ namespace appWPF.Conection
             user = "postgres";
             password = "example";
             dbName = "postgres";
-            pokemon = new ObservableCollection<Pokemon>();
+            pokemon = new List<Pokemon>();
 
         }
-
 
 
         public override DbConnection GetConnectionType()

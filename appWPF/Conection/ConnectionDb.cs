@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 
@@ -17,16 +18,17 @@ namespace appWPF.Conection
         public static DbConnection conn;
         public static DbCommand cmd;
 
-        public ObservableCollection<Pokemon> pokemon;
-
+        public List<Pokemon> pokemon;
+        //public ObservableCollection<Pokemon> pokemon;
         // Essas funções sao exemplos de Herança, pois sao herdadas da <IConnection> a interface pai Diretamente
         // e as classes <connectioMysql> e <ConnectionPostgres> tambem irao herdar indiretamente da <IConnection>
         public abstract DbConnection GetConnectionType();
 
         public abstract DbCommand GetComandType(string _query, DbConnection _conn);
 
-        public ObservableCollection<Pokemon> ConsultInDbd()
+        public List<Pokemon> ConsultInDbd()
         {
+            pokemon = new List<Pokemon>();
             query = @"select * from pokemons order by id_pokemon;";
             try
             {
@@ -68,10 +70,9 @@ namespace appWPF.Conection
                 conn.Open();
                 return true;
             }
-            catch (Exception ex)
+            catch 
             {
-                Console.WriteLine("ERROR: " + ex.Message);
-                return false;
+                throw new Exception("Não Conseguimos Conectar Ao Banco De Dados");
             }
             finally
             {

@@ -1,5 +1,6 @@
 ﻿
 using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 
@@ -8,6 +9,8 @@ namespace appWPF.Conection
 {
     public class ConnectionMysql : ConnectionDb
     {
+        private ConnectionMysql object1;
+        private IConnection object2;
 
         public ConnectionMysql()
         {
@@ -16,13 +19,15 @@ namespace appWPF.Conection
             user = "root";
             password = "mysql_luz";
             dbName = "PokeDb";
-            pokemon = new ObservableCollection<Pokemon>();
+            pokemon = new List<Pokemon>();
         }
 
-        //public ObservableCollection<Pokemon> Consult()
-        //{
-        //    return ConsultInDbd(reader);
-        //}
+        public ConnectionMysql(ConnectionMysql object1, IConnection object2)//SimsMock
+        {
+            this.object1 = object1;
+            this.object2 = object2;
+        }
+
 
         //Exemplo de polimorfismo, pois os metodos GetConnectionType(), e GetComandType(...)
         //Sao herdados da classe ConnectionDb, porem precisam tomar comportamentos diferentes,
@@ -35,7 +40,6 @@ namespace appWPF.Conection
         {
             return new MySqlCommand(_query, (MySqlConnection)_conn);
         }
-
 
     }
 }

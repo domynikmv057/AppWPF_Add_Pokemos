@@ -1,5 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,23 +14,24 @@ using System.Windows.Shapes;
 
 namespace appWPF
 {
-   
-    public partial class DadosPokemon : Window
+    /// <summary>
+    /// Lógica interna para FormsPokemon.xaml
+    /// </summary>
+    public partial class FormsPokemon : Window
     {
-        
-        public void bntSalvar(object sender, RoutedEventArgs e)
+        public FormsPokemon()
         {
-            this.DialogResult = true;
+            InitializeComponent();
         }
-
-
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
-
         }
 
-     
+        private void bntSalvar(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
+        }
     }
 }

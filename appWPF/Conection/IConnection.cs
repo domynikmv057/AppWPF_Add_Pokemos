@@ -1,11 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Common;
 
 namespace appWPF.Conection
 {
     public interface IConnection
     {
-        ObservableCollection<Pokemon> ConsultInDbd();
+        List<Pokemon> ConsultInDbd();
         bool TestConnection();
         void ConnectionInDbd(string _query);
         void InsertInDbd(string _pokeNme, string _pokeType, string pokeCoach);
